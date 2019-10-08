@@ -23,10 +23,16 @@ class Mc_OnPolicy(object):
 			if e < epsilon:
 				A = np.random.choice(available_actions)
 			else:
-				best_action = available_actions[0]
-				for actions in available_actions:
-					if Q[state][actions] >= Q[state][best_action]:
-						best_action = actions
+				if state[1] == 'X':
+					best_action = available_actions[0]
+					for actions in available_actions:
+						if Q[state][actions] <= Q[state][best_action]:
+							best_action = actions
+				else:
+					best_action = available_actions[0]
+					for actions in available_actions:
+						if Q[state][actions] >= Q[state][best_action]:
+							best_action = actions
 				A = best_action
 
 
@@ -47,10 +53,10 @@ class Mc_OnPolicy(object):
 
 		while not done:
 			available_actions = env.available_actions()
-			action = policy(state[0],available_actions)
+			action = policy(state,available_actions)
 			nstate,reward,done,_ = env.step(action)
 
-			episodes.append((state[0],action,reward))
+			episodes.append((state,action,reward))
 			state = nstate
 			iteration += 1
 
