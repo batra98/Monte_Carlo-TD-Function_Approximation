@@ -19,6 +19,7 @@ from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
     next_mark, check_game_status, after_action_state, O_REWARD, X_REWARD
 from human_agent import HumanAgent
 from base_agent import BaseAgent
+# from mc_agents import Mc_OnPolicy
 
 
 DEFAULT_VALUE = 0
@@ -381,13 +382,17 @@ def _bench(max_episode, model_file, show_result=True):
     Returns:
         (dict): Benchmark result.
     """
+    # max_episode = 10
     minfo = load_model(model_file)
-    agents = [BaseAgent('O'), TDAgent('X', 0, 0)]
     show = False
 
     start_mark = 'O'
     env = TicTacToeEnv()
     env.set_start_mark(start_mark)
+    agents = [Mc_OnPolicy('O',0.1,env,0.1), TDAgent('X', 0, 0)]
+
+    agents[0].learn(env,50000)
+
 
     episode = 0
     results = []
@@ -397,7 +402,10 @@ def _bench(max_episode, model_file, show_result=True):
         _, mark = state
         done = False
         while not done:
+
             agent = agent_by_mark(agents, mark)
+            # if mark == 'O':
+                # print(agent.Q[state])
             ava_actions = env.available_actions()
             action = agent.act(state, ava_actions)
             state, reward, done, info = env.step(action)
@@ -412,6 +420,9 @@ def _bench(max_episode, model_file, show_result=True):
                 break
             else:
                 _, mark = state
+
+
+            # env.render()
 
         # rotation start
         start_mark = next_mark(start_mark)

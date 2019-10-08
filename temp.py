@@ -6,6 +6,8 @@ from collections import defaultdict
 from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
     next_mark, check_game_status, after_action_state, O_REWARD, X_REWARD
 
+import td_agent
+
 env = TicTacToeEnv(show_number = True)
 
 mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,0.1)
@@ -35,7 +37,7 @@ def play(max_episode = 10):
                 state, reward, done, _ = env.step(action)
             else:
 #                 probability = mc.policy(state[0])
-                # print(Q[state])
+                print(Q[state])
 #                 print(probability)
 #                 action = np.random.choice(np.arange(len(probability)),p = probability)
                 action = policy(state,ava_actions)
@@ -44,7 +46,7 @@ def play(max_episode = 10):
                 accuracy += reward
                 
             iterat += 1
-            # env.render()
+            env.render()
             
             start_mark = next_mark(start_mark)
 
@@ -53,7 +55,11 @@ def play(max_episode = 10):
         
     print(accuracy)
 
-play(10000)
+
+# play(10)
+
+# for state in Q.keys():
+# 	print("{}, {}".format(state,Q[state]))
 
 
 
