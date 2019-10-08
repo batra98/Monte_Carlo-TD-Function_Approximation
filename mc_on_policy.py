@@ -83,7 +83,6 @@ def generate_episode(env,policy):
 	start_mark = 'O'
 	env.set_start_mark(start_mark)
 	state = env.reset()
-	# _,mark = state
 
 
 	done = False
@@ -91,32 +90,14 @@ def generate_episode(env,policy):
 	
 	while not done:
 		available_actions = env.available_actions()
-		# print(available_actions)
-		# env.show_turn(True,mark)
-		# if iteration%2 == 0:
-			# probability = policy(state[0])
-			# print(state[0])
-			# action = np.random.choice(np.arange(len(probability)),p = probability)
-			
-
-			
-		# else:
-
-		# action = np.random.choice(available_actions)
-		# print(available_actions)
 		action = policy(state[0],available_actions)
-		# action = np.random.choice(np.arange(len(probability)),p = probability)
-		# print(action)
-
 		nstate,reward,done,_ = env.step(action)
-		# print((state,action,reward))
+
 		episodes.append((state[0],action,reward))
 		state = nstate
 		iteration += 1
 
-		# env.render()
-
-		# _,mark = state
+		
 		start_mark = next_mark(start_mark)
 
 	return episodes
@@ -167,7 +148,7 @@ def mc_control_on_policy(env,num_episodes,discount_factor = 0.1,epsilon = 0.1):
 
 env = TicTacToeEnv(show_number = True)
 # env.render()
-Q,policy = mc_control_on_policy(env,num_episodes = 50000,epsilon = 0.5)
+Q,policy = mc_control_on_policy(env,num_episodes = 50000,epsilon = 0.1)
 
 
 
