@@ -2,17 +2,70 @@ import mc_agents
 import base_agent
 import random
 import numpy as np
+import pandas as pd
 from collections import defaultdict
 from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
     next_mark, check_game_status, after_action_state, O_REWARD, X_REWARD
 
 import td_agent
+import matplotlib.pyplot as plt
+import base_agent
+
+
+
+def plot_mean_and_CI(mean, lb, ub, color_mean=None, color_shading=None):
+    # plot the shaded range of the confidence intervals
+    plt.fill_between(range(mean.shape[0]), ub, lb,
+                     color=color_shading, alpha=.5)
+    # plot the mean on top
+    plt.plot(mean, color_mean)
 
 env = TicTacToeEnv(show_number = True)
-
+td_agent.load_model(td_agent.MODEL_FILE)
 mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,0.1)
-Q,policy = mc_onpolicy.learn(env,50000)
-print(len(Q.keys()))
+
+# mc_onpolicy.learn(env,5000,base_agent.BaseAgent('X'))
+
+mc_onpolicy.learn(env,50000,td_agent.TDAgent('X',0,0))
+
+rndm_state_action = [((0,0,0,0,0,0,0,0,0),'X'),4]
+
+
+# Y = [items[rndm_state_action[0]][rndm_state_action[1]] for items in mc_onpolicy.backup]
+X = [i for i in range(len(mc_onpolicy.backup))]
+Y = mc_onpolicy.backup
+print(np.var(np.array(Y)))
+plt.plot(X,Y)
+plt.show()
+
+# print(mc_onpolicy.backup)
+
+
+
+# fig2 = plt.figure(figsize=(10,5))
+# plot_mean_and_CI(a,b,c,'k')
+# a,b,c = mc_onpolicy.learn(env,10000,td_agent.TDAgent('X',0,0))
+
+# a = np.array(a)
+# b = np.array(b)
+# c = np.array(c)
+# a1 = np.array(a1)
+# b1 = np.array(b1)
+# c1 = np.array(c1)
+
+# # print(a.shape)
+# # print(b.shape)
+
+
+# # plt.plot(a,b)
+# plot_mean_and_CI(a,b,c,'g--','g')
+# plot_mean_and_CI(a1,b1,c1,'b--','b')
+
+# plt.show()
+
+
+
+
 
 def play(max_episode = 10):
     episode = 0
