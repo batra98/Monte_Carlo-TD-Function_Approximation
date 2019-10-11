@@ -20,8 +20,43 @@ class MC_OffPolicy_Weighted_Importance(object):
 
 	def random_policy(self,nA):
 
-		def fn(state,available_actions):
-			return np.random.choice(available_actions)
+		def fn(state,available_actions,bench = True):
+			assert len(available_actions) > 0
+
+			epsilon = 0.1
+
+			if bench == False:
+				e = np.random.random()
+			else:
+				e = 1
+			if e < epsilon:
+				A = np.random.choice(available_actions)
+			else:
+				if state[1] == 'X':
+					# best_action = available_actions[0]
+					available_values = []
+					for actions in available_actions:
+						available_values.append(self.Q[state][actions])
+					# 	if Q[state][actions] <= Q[state][best_action]:
+					# 		best_action = actions
+					indices = self.best_val_indices(available_values,min)
+				else:
+					available_values = []
+					for actions in available_actions:
+						available_values.append(self.Q[state][actions])
+					# best_action = available_actions[0]
+					# for actions in available_actions:
+					# 	if Q[state][actions] >= Q[state][best_action]:
+					# 		best_action = actions
+					indices = self.best_val_indices(available_values,max)
+
+				indices = np.array(indices)
+				idx = np.random.choice(indices)
+				A = available_actions[idx]
+
+			return A
+			# return np.random.choice(available_actions)
+
 		return fn
 
 
@@ -73,7 +108,7 @@ class MC_OffPolicy_Weighted_Importance(object):
 
 		while not done:
 			available_actions = env.available_actions()
-			action = policy(state,available_actions)
+			action = policy(state,available_actions,False)
 			# action = np.random.choice(np.arange(len(prob)),p = prob)
 			# action = int(action)
 			nstate,reward,done,_ = env.step(action)

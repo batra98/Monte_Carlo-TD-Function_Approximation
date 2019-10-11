@@ -7,12 +7,12 @@ import base_agent
 import td_agent
 
 env = TicTacToeEnv(show_number = True)
-mc_offpolicy = mc_agents.MC_OffPolicy_Weighted_Importance('O',env,0.1)
+mc_offpolicy = mc_agents.MC_OffPolicy_Weighted_Importance('O',env,1.0)
 td_agent.load_model(td_agent.MODEL_FILE)
-mc_offpolicy.learn(env,150000)
+mc_offpolicy.learn(env,50000)
 
-mc_agents.play_against(mc_offpolicy,base_agent.BaseAgent('X'),10)
-# mc_agents.play_against(mc_offpolicy,td_agent.TDAgent('X',0,0),10)
+# mc_agents.play_against(mc_offpolicy,base_agent.BaseAgent('X'),10)
+mc_agents.play_against(mc_offpolicy,td_agent.TDAgent('X',0,0),10)
 
 def play(max_episode = 10):
     episode = 0
