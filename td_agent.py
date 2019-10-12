@@ -19,7 +19,7 @@ from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
     next_mark, check_game_status, after_action_state, O_REWARD, X_REWARD
 from human_agent import HumanAgent
 from base_agent import BaseAgent
-# from mc_agents import Mc_OnPolicy
+from mc_agents import Mc_OnPolicy
 
 
 DEFAULT_VALUE = 0
@@ -389,7 +389,7 @@ def _bench(max_episode, model_file, show_result=True):
     start_mark = 'O'
     env = TicTacToeEnv()
     env.set_start_mark(start_mark)
-    agents = [Mc_OnPolicy('O',0.1,env,0.1), TDAgent('X', 0, 0)]
+    agents = [Mc_OnPolicy('O',0.1,env,1.0), TDAgent('X', 0, 0)]
 
     agents[0].learn(env,50000)
 

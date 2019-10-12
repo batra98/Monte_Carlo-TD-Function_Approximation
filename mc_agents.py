@@ -121,7 +121,9 @@ class MC_OffPolicy_Weighted_Importance(object):
 
 		return episodes
 
-	def learn(self,env,num_episodes):
+	def learn(self,env,num_episodes,agent_2):
+
+		mean_returns = []
 		C = defaultdict(lambda: np.zeros(env.action_space.n))
 
 		start_mark = 'X'
@@ -183,6 +185,16 @@ class MC_OffPolicy_Weighted_Importance(object):
 				W = W*(len(y))
 
 			start_mark = next_mark(start_mark)
+
+			mu = play_against(self,agent_2,10)
+			# number_unique.append(len(unique_states))
+			mean_returns.append(mu)
+			# low_returns.append(low)
+			# high_returns.append(high)
+
+		return mean_returns
+
+
 
 		# print(self.Q)
 
@@ -280,8 +292,8 @@ class Mc_OnPolicy(object):
 		unique_states = set()
 		number_unique = []
 		mean_returns = []
-		low_returns = []
-		high_returns = []
+		# low_returns = []
+		# high_returns = []
 
 
 		start_mark = 'X'
@@ -301,8 +313,8 @@ class Mc_OnPolicy(object):
 		
 			# print(Q)
 
-			for x in episodes:
-				unique_states.add(x[0])
+			# for x in episodes:
+				# unique_states.add(x[0])
 
 
 			for state,action in sa_in_episode:
@@ -318,15 +330,17 @@ class Mc_OnPolicy(object):
 
 			# print(self.Q)
 
-			self.backup.append(deepcopy(self.Q[((0,0,0,0,0,0,0,0,0),'X')][4]))
+			# self.backup.append(deepcopy(self.Q[((0,0,0,0,0,0,0,0,0),'X')][4]))
 
 			start_mark = next_mark(start_mark)
 
-			# mu,low,high = play_against(self,agent_2,10)
+			mu = play_against(self,agent_2,10)
 			# number_unique.append(len(unique_states))
-			# mean_returns.append(mu)
+			mean_returns.append(mu)
 			# low_returns.append(low)
 			# high_returns.append(high)
+
+		return mean_returns
 
 
 	def act(self,state,available_actions):
@@ -357,8 +371,8 @@ def play_against(agent_mc,agent_2,max_episode = 10):
 
 			# print(agent.mark)
 
-			if agent.mark == 'O':
-				print(agent.Q[state])
+			# if agent.mark == 'O':
+				# print(agent.Q[state])
 
 			action = agent.act(state,ava_actions)
 
@@ -366,7 +380,7 @@ def play_against(agent_mc,agent_2,max_episode = 10):
 
 			state,reward,done,_ = env.step(action)
 
-			env.render()
+			# env.render()
 
 			if done:
 				results.append(reward)
@@ -379,26 +393,27 @@ def play_against(agent_mc,agent_2,max_episode = 10):
 	o_win = results.count(1)
 	x_win = results.count(-1)
 	draw = len(results) - o_win - x_win
-	print("O_WINS = {},X_WINS = {},DRAW = {}".format(o_win,x_win,draw))
+	# print("O_WINS = {},X_WINS = {},DRAW = {}".format(o_win,x_win,draw))
 
 
 	if o_win == 0 and x_win == 0:
-		return float(o_win-x_win)/10.0,0,0
+		return float(o_win-x_win)/max_episode
 
 
 	if o_win > 0 and x_win > 0:
-		return float(o_win-x_win)/10.0,-1,1
+		return float(o_win-x_win)/max_episode
 	else:
 		if o_win == 0:
 			if draw > 0:
-				return float(o_win-x_win)/10.0,-1,0
+				return float(o_win-x_win)/max_episode
 			else:
-				return float(o_win-x_win)/10.0,-1,-1
+				return float(o_win-x_win)/max_episode
 		else:
 			if draw > 0:
-				return float(o_win-x_win)/10.0,0,0
+				return float(o_win-x_win)/max_episode
 			else:
-				return float(o_win-x_win)/10.0,1,1
+				return float(o_win-x_win)/max_episode
+
 
 
 

@@ -1,9 +1,9 @@
 import numpy as np
 from collections import defaultdict
 
-class Sarsa(object):
+class Expected_Sarsa(object):
 
-	def __init__(self,env,discount_factor=1.0,alpha = 0.1,epsilon = 0.9):
+	def __init__(self,env,discount_factor = 0.9,alpha = 0.81,epsilon = 0.9):
 		self.discount_factor = discount_factor
 		self.alpha = alpha
 		self.epsilon = epsilon
@@ -11,6 +11,7 @@ class Sarsa(object):
 		self.policy = self.make_epsilon_greedy_policy(self.Q,self.epsilon,env.action_space.n)
 		self.R = []
 		self.returns = []
+
 
 	def make_epsilon_greedy_policy(self,Q,epsilon,nA):
 
@@ -27,14 +28,14 @@ class Sarsa(object):
 
 		for episode in range(1,num_episodes+1):
 
-			if (episode%1000) == 0:
+			if(episode%100) == 0:
 				print("\rEpisode {}/{}".format(episode,num_episodes),end = "")
 
 			state = env.reset()
 			probs = self.policy(state)
-			action = np.random.choice(np.arange(len(probs)), p = probs)
+			action = np.random.choice(np.arange(len(probs)),p = probs)
 
-			# self.epsilon = self.epsilon*0.99
+
 			self.epsilon = 0.1 + (0.9) * np.exp(-0.01 * episode)
 
 			done = False
@@ -42,18 +43,18 @@ class Sarsa(object):
 			self.R = []
 
 			while not done:
-
-				# print("State = {},Action = {}".format(state,action))
-
 				next_state,reward,done,_ = env.step(action)
 
 				self.R.append(reward)
 				next_probs = self.policy(next_state)
 				next_action = np.random.choice(np.arange(len(next_probs)),p = next_probs)
-				# print("N_State = {},N_Action = {}".format(next_state,next_action))
 
+				expected_Q = 0
 
-				self.Q[state][action] += self.alpha*(reward + self.discount_factor*self.Q[next_state][next_action] - self.Q[state][action])
+				for i in range(env.action_space.n):
+					expected_Q += next_probs[i]*self.Q[next_state][i]
+
+				self.Q[state][action] += self.alpha*(reward + self.discount_factor*expected_Q - self.Q[state][action])
 
 				action = next_action
 				state = next_state
@@ -68,3 +69,4 @@ class Sarsa(object):
 				t = t-1
 
 			self.returns.append(G)
+
