@@ -22,21 +22,25 @@ def plot_mean_and_CI(mean, lb, ub, color_mean=None, color_shading=None):
 
 env = TicTacToeEnv(show_number = True)
 td_agent.load_model(td_agent.MODEL_FILE)
-mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,0.1)
+mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,1.0)
 
 # mc_onpolicy.learn(env,5000,base_agent.BaseAgent('X'))
+rndm_state_action = [[((0,0,0,0,0,0,0,0,0),'X'),4],[((0,1,0,0,2,0,0,0,0),'O'),0],[((0,0,1,0,2,0,0,0,0),'X'),8]]
+mc_onpolicy.learn(env,10000,td_agent.TDAgent('X',0,0),rndm_state_action)
 
-mc_onpolicy.learn(env,50000,td_agent.TDAgent('X',0,0))
+# print(mc_onpolicy.backup)
 
-rndm_state_action = [((0,0,0,0,0,0,0,0,0),'X'),4]
+# rndm_state_action = [((0,1,0,0,2,0,0,0,0),'O'),0]
+# rndm_state_action = [((0,0,1,0,2,0,0,0,0),'X'),8]
 
 
 # Y = [items[rndm_state_action[0]][rndm_state_action[1]] for items in mc_onpolicy.backup]
-X = [i for i in range(len(mc_onpolicy.backup))]
-Y = mc_onpolicy.backup
-print(np.var(np.array(Y)))
-plt.plot(X,Y)
-plt.show()
+for i in range(len(rndm_state_action)):
+    X = [i for i in range(len(mc_onpolicy.backup))]
+    Y = mc_onpolicy.backup[rndm_state_action[i]]
+    print(np.var(np.array(Y)))
+    plt.plot(X,Y)
+    plt.show()
 
 # print(mc_onpolicy.backup)
 

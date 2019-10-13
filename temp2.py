@@ -6,13 +6,57 @@ from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
 import base_agent
 import td_agent
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+def plot_mean_and_CI(mean, lb, ub, color_mean=None, color_shading=None):
+    # plot the shaded range of the confidence intervals
+    plt.fill_between(range(mean.shape[0]), ub, lb,
+                     color=color_shading, alpha=.5)
+    # plot the mean on top
+    plt.plot(mean, color_mean)
+
+def plotting(returns,window_size = 100):
+    averaged_returns = np.zeros(len(returns)-window_size+1)
+    max_returns = np.zeros(len(returns)-window_size+1)
+    min_returns = np.zeros(len(returns)-window_size+1)
+    
+    
+    for i in range(len(averaged_returns)):
+      averaged_returns[i] = np.mean(returns[i:i+window_size])
+      max_returns[i] = np.max(returns[i:i+window_size])
+      min_returns[i] = np.min(returns[i:i+window_size])
+    
+#     plt.plot(averaged_returns)
+    
+#     plot_mean_and_CI(averaged_returns,min_returns,max_returns,'g--','g')
+    
+    return (averaged_returns,max_returns,min_returns)
+
 env = TicTacToeEnv(show_number = True)
 mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,1.0)
 td_agent.load_model(td_agent.MODEL_FILE)
-mc_onpolicy.learn(env,50000,td_agent.TDAgent('X',0,0))
+mu = mc_onpolicy.learn(env,10000,td_agent.TDAgent('X',0,0))
+
+fig = plt.figure(figsize = (10,5))
+smoothing_window = 100
+a = plotting(mu,smoothing_window)
+
+plot_mean_and_CI(a[0],a[1],a[2],'b--','b')
+plt.xlabel("Episode")
+plt.ylabel("Episode Reward (Smoothed)")
+plt.title("Episode Reward over Time (Smoothed over window size {})".format(smoothing_window))
+plt.show()
+
+
+# mc_agents.load_model('Mc_OnPolicy_agent.dat',mc_onpolicy)
+# print(mc_onpolicy.Q)
 
 # mc_agents.play_against(mc_onpolicy,base_agent.BaseAgent('X'),10)
-mc_agents.play_against(mc_onpolicy,td_agent.TDAgent('X',0,0),3000)
+fig = plt.figure(figsize = (10,5))
+plt.plot(mc_onpolicy.unique_states,mu)
+plt.show()
+print(mc_agents.play_against(mc_onpolicy,td_agent.TDAgent('X',0,0),3000))
 
 
 def play(max_episode = 10):

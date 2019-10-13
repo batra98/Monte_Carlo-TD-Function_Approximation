@@ -6,6 +6,7 @@ from tqdm import tqdm as _tqdm
 tqdm = _tqdm
 from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
     next_mark, check_game_status, after_action_state, O_REWARD, X_REWARD
+import json
 
 
 class MC_OffPolicy_Weighted_Importance(object):
@@ -15,6 +16,8 @@ class MC_OffPolicy_Weighted_Importance(object):
 		self.Q = defaultdict(lambda: np.zeros(env.action_space.n))
 		self.target_policy = self.greedy_policy(self.Q,env.action_space.n)
 		self.behaviour_policy = self.random_policy(env.action_space.n)
+		self.unique_states = []
+		self.backup = defaultdict(lambda: [])
 
 
 
@@ -121,7 +124,7 @@ class MC_OffPolicy_Weighted_Importance(object):
 
 		return episodes
 
-	def learn(self,env,num_episodes,agent_2):
+	def learn(self,env,num_episodes,agent_2,rndm):
 
 		mean_returns = []
 		C = defaultdict(lambda: np.zeros(env.action_space.n))
@@ -178,6 +181,8 @@ class MC_OffPolicy_Weighted_Importance(object):
 
 				# print(self.target_policy(state,y))
 
+				
+
 				if action != self.target_policy(state,y):
 					break
 
@@ -187,10 +192,16 @@ class MC_OffPolicy_Weighted_Importance(object):
 			start_mark = next_mark(start_mark)
 
 			mu = play_against(self,agent_2,10)
-			# number_unique.append(len(unique_states))
+			self.unique_states.append(len(self.Q.keys()))
 			mean_returns.append(mu)
+
+			for s,a in rndm:
+				self.backup[(s,a)].append(deepcopy(self.Q[s][a]))
 			# low_returns.append(low)
 			# high_returns.append(high)
+
+
+		save_model('Mc_OffPolicy_agent.dat',num_episodes,None,self.discount_factor,'Mc_OffPolicy',self.Q)
 
 		return mean_returns
 
@@ -213,7 +224,8 @@ class Mc_OnPolicy(object):
 		self.discount_factor = discount_factor
 		self.Q = defaultdict(lambda: np.zeros(env.action_space.n))
 		self.policy = self.make_epsilon_greedy_policy(self.Q,self.epsilon,env.action_space.n)
-		self.backup = []
+		self.backup = defaultdict(lambda: [])
+		self.unique_states = []
 
 	def best_val_indices(self,values,fn):
 		best = fn(values)
@@ -286,11 +298,11 @@ class Mc_OnPolicy(object):
 		return episodes
 
 
-	def learn(self,env,num_episodes,agent_2):
+	def learn(self,env,num_episodes,agent_2,rndm):
 		returns_sum = defaultdict(float)
 		returns_count = defaultdict(float)
 		unique_states = set()
-		number_unique = []
+		# number_unique = []
 		mean_returns = []
 		# low_returns = []
 		# high_returns = []
@@ -330,21 +342,48 @@ class Mc_OnPolicy(object):
 
 			# print(self.Q)
 
-			# self.backup.append(deepcopy(self.Q[((0,0,0,0,0,0,0,0,0),'X')][4]))
+			for s,a in rndm:
+				self.backup[(s,a)].append(deepcopy(self.Q[s][a]))
 
 			start_mark = next_mark(start_mark)
 
 			mu = play_against(self,agent_2,10)
-			# number_unique.append(len(unique_states))
+			self.unique_states.append(len(self.Q.keys()))
 			mean_returns.append(mu)
 			# low_returns.append(low)
 			# high_returns.append(high)
-
+		
+		save_model('Mc_OnPolicy_agent.dat',num_episodes,self.epsilon,self.discount_factor,'Mc_OnPolicy',self.Q)
 		return mean_returns
 
 
 	def act(self,state,available_actions):
 		return self.policy(state,available_actions)
+
+
+def save_model(save_file,max_episode,epsilon,discount_factor,type,Q):
+	with open(save_file,'wt') as f:
+		info = dict(type = type,max_episode = max_episode,epsilon = epsilon,discount_factor = discount_factor)
+
+		f.write('{}\n'.format(json.dumps(info)))
+
+		for states in Q.keys():
+			# print(list(Q[states]))
+			f.write('{}\t{}\n'.format(states,list(Q[states])))
+
+def load_model(filename,agent):
+	with open(filename,'rb') as f:
+		info = json.loads(f.readline().decode('ascii'))
+
+		for line in f:
+			elements = line.decode('ascii').split('\t')
+			state = eval(elements[0])
+			# print(state)
+			action = eval(elements[1])
+
+			agent.Q[state] = np.array(action)
+
+	return info
 
 
 def play_against(agent_mc,agent_2,max_episode = 10):
@@ -396,24 +435,7 @@ def play_against(agent_mc,agent_2,max_episode = 10):
 	# print("O_WINS = {},X_WINS = {},DRAW = {}".format(o_win,x_win,draw))
 
 
-	if o_win == 0 and x_win == 0:
-		return float(o_win-x_win)/max_episode
-
-
-	if o_win > 0 and x_win > 0:
-		return float(o_win-x_win)/max_episode
-	else:
-		if o_win == 0:
-			if draw > 0:
-				return float(o_win-x_win)/max_episode
-			else:
-				return float(o_win-x_win)/max_episode
-		else:
-			if draw > 0:
-				return float(o_win-x_win)/max_episode
-			else:
-				return float(o_win-x_win)/max_episode
-
+	return float(o_win-x_win)/(max_episode)
 
 
 
