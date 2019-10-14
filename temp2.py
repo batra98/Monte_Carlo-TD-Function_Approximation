@@ -32,31 +32,32 @@ def plotting(returns,window_size = 100):
 #     plot_mean_and_CI(averaged_returns,min_returns,max_returns,'g--','g')
     
     return (averaged_returns,max_returns,min_returns)
+rndm_state_action = [[((0,0,0,0,0,0,0,0,0),'X'),4],[((0,1,0,0,2,0,0,0,0),'O'),0],[((1,1,2,0,2,2,0,0,1),'X'),3],[((1,1,2,0,2,2,0,0,1),'O'),3]]
 
 env = TicTacToeEnv(show_number = True)
-mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,1.0)
+mc_onpolicy = mc_agents.Mc_OnPolicy('O',0.1,env,0.9)
 td_agent.load_model(td_agent.MODEL_FILE)
-mu = mc_onpolicy.learn(env,10000,td_agent.TDAgent('X',0,0))
+mu = mc_onpolicy.learn(env,50000,td_agent.TDAgent('X',0,0),rndm_state_action)
 
-fig = plt.figure(figsize = (10,5))
-smoothing_window = 100
-a = plotting(mu,smoothing_window)
+# fig = plt.figure(figsize = (10,5))
+# smoothing_window = 100
+# a = plotting(mu,smoothing_window)
 
-plot_mean_and_CI(a[0],a[1],a[2],'b--','b')
-plt.xlabel("Episode")
-plt.ylabel("Episode Reward (Smoothed)")
-plt.title("Episode Reward over Time (Smoothed over window size {})".format(smoothing_window))
-plt.show()
+# plot_mean_and_CI(a[0],a[1],a[2],'b--','b')
+# plt.xlabel("Episode")
+# plt.ylabel("Episode Reward (Smoothed)")
+# plt.title("Episode Reward over Time (Smoothed over window size {})".format(smoothing_window))
+# plt.show()
 
 
 # mc_agents.load_model('Mc_OnPolicy_agent.dat',mc_onpolicy)
 # print(mc_onpolicy.Q)
 
-# mc_agents.play_against(mc_onpolicy,base_agent.BaseAgent('X'),10)
-fig = plt.figure(figsize = (10,5))
-plt.plot(mc_onpolicy.unique_states,mu)
-plt.show()
-print(mc_agents.play_against(mc_onpolicy,td_agent.TDAgent('X',0,0),3000))
+# mc_agents.play_against(mc_onpolicy,base_agent.BaseAgent('X'),3000,False)
+# fig = plt.figure(figsize = (10,5))
+# plt.plot(mc_onpolicy.unique_states,mu)
+# plt.show()
+print(mc_agents.play_against(mc_onpolicy,td_agent.TDAgent('X',0,0),3000,False))
 
 
 def play(max_episode = 10):

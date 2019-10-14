@@ -9,6 +9,7 @@ from gym_tictactoe.env import TicTacToeEnv, set_log_level_by, agent_by_mark,\
 import json
 
 
+
 class MC_OffPolicy_Weighted_Importance(object):
 	def __init__(self,mark,env,discount_factor):
 		self.mark = mark
@@ -353,7 +354,7 @@ class Mc_OnPolicy(object):
 			# low_returns.append(low)
 			# high_returns.append(high)
 		
-		save_model('Mc_OnPolicy_agent.dat',num_episodes,self.epsilon,self.discount_factor,'Mc_OnPolicy',self.Q)
+		save_model('Mc_OnPolicy_agent',num_episodes,self.epsilon,self.discount_factor,'Mc_OnPolicy',self.Q)
 		return mean_returns
 
 
@@ -386,7 +387,7 @@ def load_model(filename,agent):
 	return info
 
 
-def play_against(agent_mc,agent_2,max_episode = 10):
+def play_against(agent_mc,agent_2,max_episode = 10,bench = True):
 	start_mark = 'O'
 
 	env = TicTacToeEnv()
@@ -432,7 +433,9 @@ def play_against(agent_mc,agent_2,max_episode = 10):
 	o_win = results.count(1)
 	x_win = results.count(-1)
 	draw = len(results) - o_win - x_win
-	# print("O_WINS = {},X_WINS = {},DRAW = {}".format(o_win,x_win,draw))
+
+	if bench == False:
+		print("O_WINS = {},X_WINS = {},DRAW = {}".format(o_win,x_win,draw))
 
 
 	return float(o_win-x_win)/(max_episode)
