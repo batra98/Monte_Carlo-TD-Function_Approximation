@@ -49,16 +49,16 @@ def test(env,agent,num_episodes = 1000):
 env = frozen_lake.FrozenLakeEnv(None,"8x8",False)
 env.render()
 
-# sarsa_agent = Sarsa.Sarsa(env)
+sarsa_agent = Sarsa.Sarsa(env,0.8)
 Q_Learning_agent = Q_Learning.Q_Learning(env)
-# Expected_Sarsa_agent = Expected_Sarsa.Expected_Sarsa(env)
+Expected_Sarsa_agent = Expected_Sarsa.Expected_Sarsa(env)
 
 # sarsa_agent.learn(env,10000)
 Q_Learning_agent.learn(env,10000)
 # Expected_Sarsa_agent.learn(env,10000)
 
 # print(sarsa_agent.Q)
-print(Q_Learning_agent.Q)
+# print(Q_Learning_agent.Q)
 # print(Expected_Sarsa_agent.Q)
 # print(sarsa_agent.epsilon)
 
@@ -76,8 +76,8 @@ print(Q_Learning_agent.Q)
 #   min_returns[i] = np.min(sarsa_agent.returns[i:i+window_size])
 
 # plt.plot(averaged_returns)
-# # plt.xlabel("Episode")
-# # plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
+# plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
+# plt.xlabel("Episode")
 
 
 # window_size = 100
@@ -93,8 +93,8 @@ print(Q_Learning_agent.Q)
 #   min_returns[i] = np.min(Q_Learning_agent.returns[i:i+window_size])
 
 # plt.plot(averaged_returns)
-# # plt.xlabel("Episode")
-# # plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
+# plt.xlabel("Episode")
+# plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
 # # plot_mean_and_CI(averaged_returns,min_returns,max_returns,'g--','g')
 
 # window_size = 100
@@ -110,9 +110,9 @@ print(Q_Learning_agent.Q)
 #   min_returns[i] = np.min(Expected_Sarsa_agent.returns[i:i+window_size])
 
 # plt.plot(averaged_returns)
-# # plt.xlabel("Episode")
-# # plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
-# plt.show()
+# plt.xlabel("Episode")
+# plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
+plt.show()
 
 # test(env,sarsa_agent,1000)
 test(env,Q_Learning_agent,1000)
