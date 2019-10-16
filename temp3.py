@@ -46,18 +46,18 @@ def test(env,agent,num_episodes = 1000):
 
 
 
-env = frozen_lake.FrozenLakeEnv(None,"8x8",False)
+env = frozen_lake.FrozenLakeEnv(None,"4x4",True)
 env.render()
 
-sarsa_agent = Sarsa.Sarsa(env,0.8)
+sarsa_agent = Sarsa.Sarsa(env)
 Q_Learning_agent = Q_Learning.Q_Learning(env)
 Expected_Sarsa_agent = Expected_Sarsa.Expected_Sarsa(env)
 
-# sarsa_agent.learn(env,10000)
-Q_Learning_agent.learn(env,10000)
-# Expected_Sarsa_agent.learn(env,10000)
+sarsa_agent.learn(env,50000)
+# Q_Learning_agent.learn(env,50000)
+# Expected_Sarsa_agent.learn(env,50000)
 
-# print(sarsa_agent.Q)
+print(sarsa_agent.Q)
 # print(Q_Learning_agent.Q)
 # print(Expected_Sarsa_agent.Q)
 # print(sarsa_agent.epsilon)
@@ -78,6 +78,8 @@ Q_Learning_agent.learn(env,10000)
 # plt.plot(averaged_returns)
 # plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
 # plt.xlabel("Episode")
+
+# print(sarsa_agent.returns)
 
 
 # window_size = 100
@@ -114,7 +116,7 @@ Q_Learning_agent.learn(env,10000)
 # plt.ylabel("Moving average of first returns (window_size={})".format(window_size))
 plt.show()
 
-# test(env,sarsa_agent,1000)
-test(env,Q_Learning_agent,1000)
+test(env,sarsa_agent,1000)
+# test(env,Q_Learning_agent,1000)
 # test(env,Expected_Sarsa_agent,1000)
 
