@@ -1,7 +1,7 @@
 # Tic-Tac-Toe via Monte-Carlo Methods
 
 ## Introduction
-- **gym-tictactoe** contains a Tic-Tac-Toe environment designed alongside the specs of an environment in OpenAI gym. (taken from (haje01/gym-tictactoe)[https://github.com/haje01/gym-tictactoe])
+- **gym-tictactoe** contains a Tic-Tac-Toe environment designed alongside the specs of an environment in OpenAI gym. (taken from [haje01/gym-tictactoe](https://github.com/haje01/gym-tictactoe))
 - There is also a BaseAgent (**base_agent.py**) and a TDAgent (**td_agent.py**) which is trained using Temporal Difference learning (TD-Learning), along with a trained model (**best_td_agent.dat**).
 - We need to train our own agents using 2 methods:
     - On-policy Monte-Carlo.

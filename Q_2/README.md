@@ -3,6 +3,7 @@
 ## Introduction
 - We take **FrozenLake 8X8/4X4** from OpenAI gym and configure it to have suitable number of slippery blocks.
 - Implement **SARSA**, **Q-Learning**, **Expected SARSA** agents for the FrokenLake environment.
+- The description of the environment can be found [here](https://gym.openai.com/envs/FrozenLake-v0/).
 
 ## :file_folder: File Structure
 ```bash
@@ -101,16 +102,22 @@ env_FL_large_False = frozen_lake.FrozenLakeEnv(None,"8x8",False)
 ### Sarsa
     
 1. Sarsa is on-policy algorithm. It implies that it learns the Q-values based on the action performed by the current policy instead of the greedy policy.
-2. Update equation of SARSA is
+2. Update equation of SARSA is:
 <p align="center">
     <img src="https://render.githubusercontent.com/render/math?math=Q(S_t,A_t) = Q(S_t,A_t) + \alpha \times \big\{R_{t+1} + \gamma Q(S_{t+1},A_{t+1}) - Q(S_t,A_t)\big\}">
 </p>
-3. Here, the actions are chosen from a epsilon-greedy policy where <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> is initially <img src="https://render.githubusercontent.com/render/math?math=0.9"> and finally converges to <img src="https://render.githubusercontent.com/render/math?math=0.1"> using the decay equation:
+<p>
+Here, the actions are chosen from a epsilon-greedy policy where <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> is initially <img src="https://render.githubusercontent.com/render/math?math=0.9"> and finally converges to <img src="https://render.githubusercontent.com/render/math?math=0.1"> using the decay equation:
+</p>
 <p align="center">
     <img src="https://render.githubusercontent.com/render/math?math=\epsilon_{t} = \epsilon_{min} + \epsilon_{max} \times \exp(-0.01t)">
 </p>
-4. This is required so as to enable the TD methods to converge. Initially, there is more exploration and eventually it converges to a <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> - greedy policy.
-5. <img src="https://render.githubusercontent.com/render/math?math=\alpha"> is also varied inversely proportional to time as:
+<p>
+This is required so as to enable the TD methods to converge. Initially, there is more exploration and eventually it converges to a <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> - greedy policy.
+</p>
+<p>
+<img src="https://render.githubusercontent.com/render/math?math=\alpha"> is also varied inversely proportional to time as:
+</p>
 <p align="center">
     <img src="https://render.githubusercontent.com/render/math?math=\alpha_t = \min (\alpha_{t-1},1000/t)">
 </p>
@@ -121,7 +128,9 @@ env_FL_large_False = frozen_lake.FrozenLakeEnv(None,"8x8",False)
 <p align="center">
     <img src="https://render.githubusercontent.com/render/math?math=Q(S_t,A_t) = Q(S_t,A_t) + \alpha \times \big\{R_{t+1} + \gamma \max_{a}Q(S_{t+1},a) - Q(S_t,A_t)\big\}">
 </p>
-- In order to make the algorithm converge, we manipulate <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> as done in SARSA.
+<p>
+In order to make the algorithm converge, we manipulate <img src="https://render.githubusercontent.com/render/math?math=\epsilon"> as done in SARSA.
+</p>
 
 ### Expected SARSA
 1. Expected SARSA takes the expectation of Q values of every possible action in the current state.
