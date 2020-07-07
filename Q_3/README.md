@@ -7,6 +7,7 @@
 - We receive the current state of the environment in the form of an image of the current state of game.
 - Using this we need to estimate the best next action possible and hence use the MSE loss to train our model.
 - We can consider the neural net as a black box which takes the set of states as its input and gives the corresponding $Q$ values as output. We can then choose the action = <img src="https://render.githubusercontent.com/render/math?math=argmax_{action} Q(state)">.
+- [Here](https://www.youtube.com/watch?v=TmPfTpjtdgg) is a very inteersing video on how the DQN agent agent learns.
 
 ## :file_folder: File Structure
 ```bash
@@ -29,7 +30,7 @@
 - Main idea in DQN is we try to estimate <img src="https://render.githubusercontent.com/render/math?math=Q(s,a)"> values as in other TD Algorithms but instead of filling a <img src="https://render.githubusercontent.com/render/math?math=Q(s,a)"> matrix, we train a neural network.
 - We try to minimize the loss in each episode/epoch.Loss is given by:
 <p align="center">
-    <img src="https://render.githubusercontent.com/render/math?math=J = ( reward + \gamma \max_{a^{'}}\hat{Q} (s,a^{'}) - \hat{Q})^2">
+    <img src="https://render.githubusercontent.com/render/math?math=J = ( reward%2B\gamma \max_{a^{'}}\hat{Q} (s,a^{'}) - \hat{Q})^2">
 </p>
 - The algorithm tens to forget the previous experiences as it overwrites them with new experiences, so in order to overcome this we come up with the idea of replay experience.
 - Basically, we store some states (video frames) into buffer and sample a mini_batch of samples to train the deep network. This forms a input dataset stable enough for training.Samples are iid as they are randomly smapled from buffer.
